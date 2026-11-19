@@ -71,13 +71,12 @@ test('the site is dark only, square-cornered and uses the bat gold accent', asyn
   await expect(page.locator('pre')).toHaveCSS('font-family', /JetBrains Mono/);
 });
 
-test('hero scene draws a lit skyline and a flock of flapping bats', async ({ page }) => {
+test('hero runs the night scene on a canvas and the brand shows the watcher eyes', async ({ page }) => {
   await page.goto('./');
   await expect(page.locator('.night')).toHaveAttribute('role', 'img');
-  expect(await page.locator('.windows rect').count()).toBeGreaterThan(5);
-  expect(await page.locator('.bat-x').count()).toBeGreaterThanOrEqual(6);
-  await expect(page.locator('.bat-x').first()).toHaveCSS('animation-name', 'bat-x');
-  await expect(page.locator('.wing').first()).toHaveCSS('animation-name', 'flap');
+  await expect(page.locator('.night canvas')).toHaveCount(1);
+  await expect(page.locator('.brand-mark')).toHaveAttribute('viewBox', '0 0 24 12');
+  await expect(page.locator('.brand-mark')).toHaveCSS('color', 'rgb(245, 197, 66)');
 });
 
 test('copy names no franchise', async ({ page }) => {
@@ -150,10 +149,6 @@ for (const width of [360, 768, 1440]) {
       await page.goto(route);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
       await expect(page.locator('h1')).toBeVisible();
-      // Bats rest along their flight paths instead of disappearing.
-      const bat = page.locator('.bat-x').first();
-      await expect(bat).toHaveCSS('animation-name', 'none');
-      expect(await bat.evaluate(element => getComputedStyle(element).transform)).not.toBe('none');
     }
   });
 }

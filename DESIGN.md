@@ -5,7 +5,8 @@ Brewman is a macOS desktop utility for the packages Homebrew installed. Design s
 
 ## Visual language
 
-- **A night city behind glass.** The window is a live `Shader` backdrop (`src/ui/NightScene.tsx`): a cold backlight
+- **A night city behind glass.** The window is a live `Shader` backdrop (`src/ui/NightScene.tsx`, its WGSL in
+  `src/ui/scene.ts`, which the website's hero also runs with WebGPU): a cold backlight
   behind a hooded, caped figure on a rooftop, a hazy far skyline and a nearer one with gold windows, and a flock of
   bats leaving the light along three curved streams, each bat with its own speed, size, sideways drift and wing beat.
   It is drawn in a 1120×720 frame anchored to the window's right edge, and darkened on the left so the sidebar and
@@ -23,8 +24,8 @@ Brewman is a macOS desktop utility for the packages Homebrew installed. Design s
   `font-mono` with tabular figures.
 - **Spacing.** 4 / 8 / 12 / 16 / 20 / 24. Sidebar 208 wide (184 compact), inspector 300 (248 compact), header 52,
   table header 32, rows 44, status bar 28, nav items 30.
-- **App icon.** `assets/icon.svg` → `assets/icon.png` (1024): an angular gold mug on a night square, bats rising
-  from it.
+- **App icon.** `assets/icon.svg` → `assets/icon.png` (1024): the watcher's two glowing gold eyes on a night square.
+  The same eyes are the brand mark in the title bar and on the website.
 
 ## Layout
 
