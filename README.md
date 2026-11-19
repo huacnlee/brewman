@@ -19,30 +19,57 @@ shader rainy night with bats behind translucent panels, sharp corners and a sing
 
 macOS on Apple silicon or Intel, with [Homebrew](https://brew.sh) installed.
 
+### Stable
+
 ```sh
 curl -fsSL https://huacnlee.github.io/brewman/install.sh | sh
 ```
 
 This downloads the latest release, verifies its SHA-256 checksum and installs `Brewman.app` into `~/Applications`. Run it
-again to upgrade. Options:
+again to upgrade.
+
+To install a specific release, pass `--version`:
 
 ```sh
-curl -fsSL https://huacnlee.github.io/brewman/install.sh | sh -s -- --version v0.1.0   # a specific release
-curl -fsSL https://huacnlee.github.io/brewman/install.sh | sh -s -- --dir /Applications # another folder
+curl -fsSL https://huacnlee.github.io/brewman/install.sh | sh -s -- --version v0.1.0
+```
+
+To install into another folder, pass `--dir`:
+
+```sh
+curl -fsSL https://huacnlee.github.io/brewman/install.sh | sh -s -- --dir /Applications
 ```
 
 To remove it, quit Brewman and delete `~/Applications/Brewman.app`.
 
+### From source
+
+Install the `nsh` CLI from [nsh.dev](https://nsh.dev/docs/installation), then clone the repository and run Brewman:
+
+```sh
+git clone https://github.com/huacnlee/brewman.git
+cd brewman
+nsh run
+```
+
+To package `Brewman.app` for your Mac, run the release script with a version number. It writes
+`.nsh/dist/brewman-v0.1.0-<arch>-apple-darwin.tar.gz`, which contains `Brewman.app`:
+
+```sh
+scripts/build-release.sh 0.1.0
+```
+
 ## Development
 
 Brewman is a TSX app on NSH (no Rust of its own). Install the `nsh` CLI from [nsh.dev](https://nsh.dev/docs/installation),
-then:
+then use `nsh run` to run with hot reload, `nsh check` to type check, `nsh build` to bundle and `nsh test` to run the
+headless UI tests:
 
 ```sh
-nsh run        # run with hot reload
-nsh check      # type check
-nsh build      # bundle
-nsh test       # headless UI tests
+nsh run
+nsh check
+nsh build
+nsh test
 ```
 
 - `App.tsx`: the window: title bar, sidebar, package table, inspector, uninstall dialog.
