@@ -25,6 +25,8 @@ status:
   loading: "正在读取软件包…"
   updating: "正在更新 Homebrew…"
   updates_found: "%{count} 个软件包可更新"
+  upgrading_selected: "正在升级 %{count} 个软件包…"
+  upgraded_selected: "已升级 %{count} 个软件包"
   upgrading: "正在升级 %{name}…"
   upgraded: "已将 %{name} 升级到 %{version}"
   uninstalling: "正在卸载 %{name}…"
@@ -84,3 +86,8 @@ quick_menu:
   feedback: "反馈"
   sponsor: "赞助"
   quit: "退出"
+batch:
+  select_visible: "选择可见项"
+  clear_visible: "清除可见项"
+  upgrade_selected: "升级已选项目（%{count}）"
+  select_package: "选择升级 %{name}"

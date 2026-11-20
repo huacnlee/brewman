@@ -25,6 +25,8 @@ status:
   loading: "Reading packages…"
   updating: "Updating Homebrew…"
   updates_found: "%{count} packages can be updated"
+  upgrading_selected: "Upgrading %{count} packages…"
+  upgraded_selected: "Upgraded %{count} packages"
   upgrading: "Upgrading %{name}…"
   upgraded: "Upgraded %{name} to %{version}"
   uninstalling: "Uninstalling %{name}…"
@@ -84,3 +86,8 @@ quick_menu:
   feedback: "Feedback"
   sponsor: "Sponsor"
   quit: "Quit"
+batch:
+  select_visible: "Select Visible"
+  clear_visible: "Clear Visible"
+  upgrade_selected: "Upgrade Selected (%{count})"
+  select_package: "Select %{name} for upgrade"
