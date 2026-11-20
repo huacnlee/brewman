@@ -3,7 +3,7 @@ import appIcon from "./assets/icon.png";
 import eyesGlyph from "./src/ui/icons/eyes.svg";
 import { Menu } from "nsh/desktop";
 import { t } from "nsh/i18n";
-import { Dialog } from "nsh/base";
+import { Checkbox, Dialog } from "nsh/base";
 import { brew, inventory, modify, type Package } from "./src/brew";
 import { Button, Chip, Field, KindTile, LetterIndex, NavItem, PackageRow, SearchField, Spinner, display, letterOf } from "./src/ui/controls";
 import { appInfo, type ListRef } from "nsh";
@@ -33,6 +33,7 @@ function App() {
   const section = signal<Section>(sections[0]);
   const query = signal("");
   const selected = signal("");
+  const selectedUpdates = signal<string[]>([]);
   const busy = signal("");
   const loaded = signal(false);
   const message = signal<{text: string; tone: "done" | "error"} | null>(null);
@@ -69,6 +70,7 @@ function App() {
     } catch (error) { failure = reason(error); }
     try {
       packages.set(await inventory());
+      selectedUpdates.set(selectedUpdates().filter(id => packages().some(p => key(p) === id && p.outdated)));
       loaded.set(true);
     } catch (error) { failure = [failure, reason(error)].filter(Boolean).join("\n"); }
     busy.set("");
@@ -81,6 +83,26 @@ function App() {
       const version = packages().find(p => key(p) === key(target))?.installed;
       return t("status.upgraded", {name: target.name, version: version || target.latest});
     });
+  }
+  function toggleUpdate(target: Package, checked: boolean) {
+    selectedUpdates.set(checked ? [...selectedUpdates().filter(id => id !== key(target)), key(target)] : selectedUpdates().filter(id => id !== key(target)));
+  }
+  function selectVisibleUpdates() {
+    const ids = visible().filter(p => p.outdated).map(key);
+    const allSelected = ids.every(id => selectedUpdates().includes(id));
+    selectedUpdates.set(allSelected ? selectedUpdates().filter(id => !ids.includes(id)) : [...new Set([...selectedUpdates(), ...ids])]);
+  }
+  function upgradeSelected() {
+    const targets = packages().filter(p => p.outdated && selectedUpdates().includes(key(p)));
+    if (busy() || !targets.length) return;
+    void refresh(t("status.upgrading_selected", {count: targets.length}), async () => {
+      const failures: string[] = [];
+      for (const target of targets) {
+        try { await modify("upgrade", target); }
+        catch (error) { failures.push(`${target.name}: ${reason(error)}`); }
+      }
+      if (failures.length) throw new Error(failures.join(" | "));
+    }, () => t("status.upgraded_selected", {count: targets.length}));
   }
   function updateHomebrew() {
     void refresh(t("status.updating"), () => brew(["update"]), () =>
@@ -165,6 +187,13 @@ function App() {
     <View class="flex-1">
       <View class="flex-1 flex-row">
         <View class="flex-1">
+          <If when={section().id === "updates" && loaded() && !!visible().length}>
+            <View class="flex-row items-center gap-2 border-b border-foreground/10 px-5 py-2">
+              <Button label={t(visible().filter(p => p.outdated).every(p => selectedUpdates().includes(key(p))) ? "batch.clear_visible" : "batch.select_visible")} disabled={!!busy()} press={selectVisibleUpdates}/>
+              <Button variant="primary" label={t("batch.upgrade_selected", {count: selectedUpdates().length})}
+                disabled={!!busy() || !selectedUpdates().length} press={upgradeSelected}/>
+            </View>
+          </If>
           <If when={loaded() && !!visible().length}>
             <View class="h-8 flex-row items-center gap-3 border-b border-foreground/10 px-5">
               <Text class="flex-1 text-xs text-subtle">{t("table.package")}</Text>
@@ -173,10 +202,17 @@ function App() {
             </View>
             <View class="flex-1 flex-row">
             <List ref={node => { packageList = node; }} onScroll={trackTop} each={visible()} keyExtractor={key} estimatedItemSize={44} class="flex-1 px-2 py-1">
-              {row => <PackageRow testID={key(row())} name={row().name} desc={row().desc || row().kind}
+              {row => <View class="flex-row items-center">
+              <If when={section().id === "updates"}><Checkbox checked={selectedUpdates().includes(key(row()))} disabled={!!busy()}
+                accessibilityLabel={t("batch.select_package", {name: row().name})}
+                onChange={e => toggleUpdate(row(), e.checked)}
+                class="w-8 h-10 items-center justify-center focus-visible:ring-1 focus-visible:ring-ring"
+                indicatorClass="w-4 h-4 border border-border-strong checked:bg-primary"
+                indicator={selectedUpdates().includes(key(row())) ? <Icon name="check" size="xs"/> : null}/></If>
+              <View class="flex-1"><PackageRow testID={key(row())} name={row().name} desc={row().desc || row().kind}
                 installed={row().installed} outdated={row().outdated} status={row().outdated ? row().latest : t("table.up_to_date")}
                 cask={row().kind === "Cask"} compact={compact()} selected={!!item() && key(item()!) === key(row())}
-                press={() => selected.set(key(row()))} menu={at => openRowMenu(row(), at)}/>}
+                press={() => selected.set(key(row()))} menu={at => openRowMenu(row(), at)}/></View></View>}
             </List>
             <LetterIndex present={letter => lettersPresent().has(letter)} current={topLetter()} press={jumpTo}/>
             </View>
