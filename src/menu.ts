@@ -7,6 +7,9 @@ import { links, openExternal } from "./links";
 
 export interface MenuActions {
   about(): void;
+  background(): boolean;
+  backgroundReady(): boolean;
+  toggleBackground(): void;
   updateHomebrew(): void;
   find(): void;
   /** The sidebar sections, in order: chosen by ⌘1…⌘4. */
@@ -18,6 +21,7 @@ export interface MenuActions {
 export function toolbarMenuItems(a: MenuActions): MenuEntry[] {
   return [
     {label: t("quick_menu.update"), icon: "refresh", shortcut: keymap.label("mod+r"), disabled: a.busy(), select: a.updateHomebrew},
+    {label: t(a.background() ? "background.hide" : "background.show"), disabled: !a.backgroundReady(), select: a.toggleBackground},
     {label: t("quick_menu.search"), icon: "search", shortcut: keymap.label("mod+f"), select: a.find},
     "separator",
     {label: t("quick_menu.about"), icon: "info", select: a.about},
@@ -55,6 +59,7 @@ export function installAppMenu(a: MenuActions): void {
     {label: t("app_menu.view"), submenu: [
       ...a.sections().map((s, i) => ({label: s.label, shortcut: "mod+" + (i + 1), checked: s.selected, onSelect: s.select})),
       {type: "separator"},
+      {label: t("background.menu"), checked: a.background(), disabled: !a.backgroundReady(), onSelect: a.toggleBackground},
       {role: "toggleFullScreen"},
     ]},
     {label: t("app_menu.window"), submenu: [{role: "minimize"}, {role: "zoom"}]},

@@ -32,3 +32,17 @@ test("reports a missing Homebrew in the status bar without an error prefix", asy
   await app.waitFor("Homebrew was not found. Check where brew is installed.");
   expect(app.texts().some(t => t.startsWith("Error:"))).toBe(false);
 });
+
+
+test("persists the background choice and restores it on startup", async () => {
+  const app = await open("./App.tsx", {locale: "en-US", width: 1120, height: 720});
+  await app.press("Menu");
+  await app.press("Hide Background");
+  await app.waitUntil(() => app.storage().showNightScene === "false");
+  await app.press("Menu");
+  await app.press("Show Background");
+  await app.waitUntil(() => app.storage().showNightScene === "true");
+  const restored = await open("./App.tsx", {locale: "en-US", width: 1120, height: 720, storage: {showNightScene: "false"}});
+  await restored.press("Menu");
+  expect(restored.texts()).toContain("Show Background");
+});
