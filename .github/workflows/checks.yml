@@ -10,7 +10,7 @@ concurrency:
   group: checks-${{ github.ref }}
   cancel-in-progress: true
 env:
-  NSH_VERSION: v0.6.0
+  NSH_VERSION: nightly
 jobs:
   test:
     runs-on: macos-15
