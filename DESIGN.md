@@ -40,7 +40,8 @@ Below 980pt the sidebar and inspector narrow and the table drops its version col
 
 `Button` (primary / default / ghost / danger / danger-solid; sm 28, md 32), `NavItem`, `SearchField`, `PackageRow`,
 `StatusMark`, `Field`, `Chip`, `Icon`, `TitleBar`, motion tokens in `motion.ts`. Features compose these and never
-write colours or radii.
+write colours or radii. `Icon` draws [Lucide](https://lucide.dev) icons through `nsh-icon` (12 / 14 / 16 / 20pt, tinted
+by a text token); only the brand's lens eyes (`src/ui/icons/eyes.svg`) are the app's own drawing.
 
 ## Motion inventory
 
