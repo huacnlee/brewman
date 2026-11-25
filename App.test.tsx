@@ -58,3 +58,16 @@ test("upgrades the selected formula and cask and refreshes after a failure", asy
   expect(calls.filter(args => args[0] === "upgrade")).toEqual([["upgrade", "--formula", "alpha"], ["upgrade", "--cask", "beta"]]);
   expect(app.texts()).toContain("alpha: upgrade failed");
 });
+
+test("persists the background choice and restores it on startup", async () => {
+  const app = await open("./App.tsx", {locale: "en-US", width: 1120, height: 720});
+  await app.press("Menu");
+  await app.press("Hide Background");
+  await app.waitUntil(() => app.storage().showNightScene === "false");
+  await app.press("Menu");
+  await app.press("Show Background");
+  await app.waitUntil(() => app.storage().showNightScene === "true");
+  const restored = await open("./App.tsx", {locale: "en-US", width: 1120, height: 720, storage: {showNightScene: "false"}});
+  await restored.press("Menu");
+  expect(restored.texts()).toContain("Show Background");
+});

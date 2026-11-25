@@ -14,7 +14,7 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 env:
-  NSH_VERSION: v0.6.0
+  NSH_VERSION: nightly
 jobs:
   build:
     strategy:

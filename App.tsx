@@ -6,14 +6,14 @@ import { t } from "nsh/i18n";
 import { Checkbox, Dialog } from "nsh/base";
 import { brew, inventory, modify, type Package } from "./src/brew";
 import { Button, Chip, Field, KindTile, LetterIndex, NavItem, PackageRow, SearchField, Spinner, display, letterOf } from "./src/ui/controls";
-import { appInfo, type ListRef } from "nsh";
+import { appInfo, Storage, type ListRef } from "nsh";
 import { installAppMenu, toolbarMenuItems } from "./src/menu";
 import { DropdownMenu } from "./src/ui/menu";
 import { links, openExternal } from "./src/links";
 import { Icon, type IconName } from "./src/ui/Icon";
 import { motionTokens, revealOn } from "./src/ui/motion";
-import { NightScene } from "./src/ui/NightScene";
 import { TitleBar } from "./src/ui/TitleBar";
+import { NightScene } from "./src/ui/NightScene";
 
 type Section = {id: "all" | "Formula" | "Cask" | "updates"; label: string; icon: IconName};
 const sections: Section[] = [
@@ -28,6 +28,16 @@ const lastLine = (text: string) => text.split("\n").map(l => l.trim()).filter(Bo
 const reason = (error: unknown) => error instanceof Error ? error.message : String(error);
 
 function App() {
+  const background = signal(false);
+  const backgroundReady = signal(false);
+  void Storage.getItem("showNightScene").then(value => {
+    background.set(value !== "false");
+    backgroundReady.set(true);
+  }).catch(error => {
+    background.set(true);
+    backgroundReady.set(true);
+    console.error("Could not read background setting", error);
+  });
   const compact = signal(false);
   const packages = signal<Package[]>([]);
   const section = signal<Section>(sections[0]);
@@ -135,6 +145,18 @@ function App() {
 
   const menuActions = {
     about: () => aboutOpen.set(true),
+    background: () => background(),
+    backgroundReady: () => backgroundReady(),
+    toggleBackground: () => {
+      const next = !background();
+      backgroundReady.set(false);
+      background.set(next);
+      void Storage.setItem("showNightScene", String(next)).catch(error => {
+        background.set(!next);
+        console.error("Could not save background setting", error);
+        message.set({text: t("errors.background_setting"), tone: "error"});
+      }).finally(() => backgroundReady.set(true));
+    },
     updateHomebrew,
     find: () => searchInput?.focus(),
     busy: () => !!busy(),
@@ -147,8 +169,7 @@ function App() {
   const sidebarWidth = () => compact() ? 184 : 208;
 
   return <View class="flex-1 bg-background" onLayout={e => compact.set(e.bounds.size.width < 980)}>
-    <NightScene/>
-
+    <If when={background()}><NightScene/></If>
     <TitleBar brandWidth={sidebarWidth()}
       brand={<>
         <Image src={eyesGlyph} accessibilityElementsHidden class="w-6 h-3" style={{tintColor: token("primary")}}/>

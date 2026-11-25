@@ -50,6 +50,7 @@ dialog:
   cancel: "取消"
   confirm: "卸载"
 errors:
+  background_setting: "无法保存背景设置"
   no_brew: "未找到 Homebrew，请检查 brew 安装路径。"
   brew_failed: "Homebrew 命令失败"
 app_menu:
@@ -91,3 +92,7 @@ batch:
   clear_visible: "清除可见项"
   upgrade_selected: "升级已选项目（%{count}）"
   select_package: "选择升级 %{name}"
+background:
+  show: "显示背景"
+  hide: "隐藏背景"
+  menu: "显示背景"

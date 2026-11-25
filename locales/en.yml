@@ -50,6 +50,7 @@ dialog:
   cancel: "Cancel"
   confirm: "Uninstall"
 errors:
+  background_setting: "Could not save the background setting"
   no_brew: "Homebrew was not found. Check where brew is installed."
   brew_failed: "The Homebrew command failed"
 app_menu:
@@ -91,3 +92,7 @@ batch:
   clear_visible: "Clear Visible"
   upgrade_selected: "Upgrade Selected (%{count})"
   select_package: "Select %{name} for upgrade"
+background:
+  show: "Show Background"
+  hide: "Hide Background"
+  menu: "Show Background"
